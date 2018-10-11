@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hangman2!</title>
+</head>
+<body>
+    <script>
+    
+    var words = ["javascript", "monkey", "amazing", "pancake", "tractor", "blablabla"];
+
+    
+    var pickWord = function() {
+        return words[Math.floor(Math.random() * words.length)];
+    };
+
+    var setupAnswerArray = function (word) {
+        var answerArray = [];
+    for (var i = 0; i < word.length; i++) {
+        answerArray[i] = "_";
+        }
+        return answerArray;
+    }
+    
+    var word = pickWord();
+    var answerArray = setupAnswerArray(word);
+    var remainingLetters = word.length;
+
+    
+
+    var showPlayerProgress = function (answerArray) {
+        alert(answerArray.join(" "));
+    }
+
+    var getGuess = function () {
+        return prompt("Guess a letter, or click Cancel to stop playing.").toLowerCase();
+     }
+
+    var updateGameState = function (guess, word, answerArray) {
+      // var letterAppearence =0;
+        for (var j = 0; j < word.length; j++) {
+                 if (answerArray[j] === guess) {
+                    alert("You already guessed this letter!");
+                    break;
+
+                } 
+                if (word[j] === guess) {
+                    answerArray[j] = guess;
+                    letterAppearence++;
+                }
+                    
+             }
+         //    return letterAppearence;
+            
+    } 
+
+    var showAnswerAndCongratulatePlayer = function (answerArray) {
+        alert(answerArray.join(" "));
+        alert("Good job! The answer is " + word)
+    }
+
+
+    while (remainingLetters > 0) {
+        showPlayerProgress (answerArray);
+        var guess = getGuess();
+        if (guess === null) {
+            break;
+        } else if (guess.length !== 1) {
+            alert("Please eneter a single letter.");
+        } else {
+            var correctGuesses = updateGameState(guess, word, answerArray);
+            remainingLetters -= correctGuesses;
+        }
+    }
+
+    showAnswerAndCongratulatePlayer(answerArray);
+
+    </script>
+</body>
+</html>
