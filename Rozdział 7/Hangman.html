@@ -8,24 +8,26 @@
 </head>
 <body>
     <h1>Hangman!</h1>
-    
+
     <script>
     var words = ["javascript", "monkey", "amazing", "pancake", "tractor", "blablabla"];
 
-    var word = words[Math.floor(Math.random()*words.length)];
+    var word = words[Math.floor(Math.random() * words.length)];
 
     var answerArray = [];
     for (var i = 0; i < word.length; i++) {
         answerArray[i] = "_";
     }
 
-    var remainingLetters = word.length; 
+    var remainingLetters = word.length;
     var remainingAttempts = 0;
+    var allowedTries = 15;
 
-    while (remainingLetters > 0 && remainingAttempts < 15) {
+    while (remainingLetters > 0 && remainingAttempts < allowedTries) {
         alert(answerArray.join(" "));
-        var guess = prompt("Guess a letter, or click Cancel to stop playing.").toLowerCase();
-        
+        var guess = (prompt("Guess a letter, or click Cancel to stop playing.") || '').toLowerCase();
+
+        console.log(guess)
         if (guess === null) {
             break;
         } else if (guess.length !== 1){
@@ -36,16 +38,16 @@
                     alert("You already guessed this letter!");
                     break;
 
-                } 
+                }
                 if (word[j] === guess) {
                     answerArray[j] = guess;
                     remainingLetters--;
                 }
-                    
+
              }
-            
+
         }
-        
+
         remainingAttempts++;
     }
 

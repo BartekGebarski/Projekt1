@@ -6,77 +6,82 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Hangman2!</title>
 </head>
-<body>
+  <body>
     <script>
-    
-    var words = ["javascript", "monkey", "amazing", "pancake", "tractor", "blablabla"];
 
-    
-    var pickWord = function() {
+      var words = ['javascript', 'monkey', 'amazing', 'pancake', 'tractor', 'blablabla'];
+
+      var pickWord = function() {
         return words[Math.floor(Math.random() * words.length)];
-    };
+      };
 
-    var setupAnswerArray = function (word) {
+      var setupAnswerArray = function(word) {
         var answerArray = [];
-    for (var i = 0; i < word.length; i++) {
-        answerArray[i] = "_";
+
+        for (var i = 0; i < word.length; i++) {
+          answerArray[i] = '_';
         }
+
         return answerArray;
-    }
-    
-    var word = pickWord();
-    var answerArray = setupAnswerArray(word);
-    var remainingLetters = word.length;
+      }
 
-    
+      var word = pickWord();
+      var answerArray = setupAnswerArray(word);
+      var remainingLetters = word.length;
 
-    var showPlayerProgress = function (answerArray) {
-        alert(answerArray.join(" "));
-    }
+      var showPlayerProgress = function() {
+        alert(answerArray.join(' '));
+      }
 
-    var getGuess = function () {
-        return prompt("Guess a letter, or click Cancel to stop playing.").toLowerCase();
-     }
+      var getGuess = function() {
+        var guessResult = prompt('Guess a letter, or click Cancel to stop playing.');
+        return guessResult ? guessResult.toLowerCase() : null;
+      }
 
-    var updateGameState = function (guess, word, answerArray) {
-      // var letterAppearence =0;
+      var updateGameState = function (guess) {
+        var letterAppearence = 0;
+
         for (var j = 0; j < word.length; j++) {
-                 if (answerArray[j] === guess) {
-                    alert("You already guessed this letter!");
-                    break;
-
-                } 
-                if (word[j] === guess) {
-                    answerArray[j] = guess;
-                    letterAppearence++;
-                }
-                    
-             }
-         //    return letterAppearence;
-            
-    } 
-
-    var showAnswerAndCongratulatePlayer = function (answerArray) {
-        alert(answerArray.join(" "));
-        alert("Good job! The answer is " + word)
-    }
-
-
-    while (remainingLetters > 0) {
-        showPlayerProgress (answerArray);
-        var guess = getGuess();
-        if (guess === null) {
+          if (answerArray[j] === guess) {
+            alert('You already guessed this letter!');
             break;
-        } else if (guess.length !== 1) {
-            alert("Please eneter a single letter.");
-        } else {
-            var correctGuesses = updateGameState(guess, word, answerArray);
-            remainingLetters -= correctGuesses;
-        }
-    }
+          }
 
-    showAnswerAndCongratulatePlayer(answerArray);
+          if (word[j] === guess) {
+            answerArray[j] = guess;
+            letterAppearence++;
+          }
+
+        }
+
+        return letterAppearence;
+      }
+
+      var showAnswerAndCongratulatePlayer = function(answerArray) {
+        alert(answerArray.join(' '));
+        alert('Good job! The answer is ' + word)
+      }
+
+
+      while (remainingLetters > 0) {
+        showPlayerProgress(answerArray);
+        var guess = getGuess();
+
+        if (guess === null) {
+          break;
+        } else if (guess.length !== 1) {
+          alert('Please eneter a single letter.');
+        } else {
+          var correctGuesses = updateGameState(guess);
+          remainingLetters -= correctGuesses;
+
+          if (remainingLetters <= 0) {
+            showAnswerAndCongratulatePlayer(answerArray);
+          }
+        }
+      }
+
 
     </script>
-</body>
+  </body>
 </html>
