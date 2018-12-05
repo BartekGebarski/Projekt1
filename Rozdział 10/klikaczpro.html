@@ -7,67 +7,76 @@
     <title>Document</title>
 </head>
 <body>
-    <h1 id="heading">Hello world!</h1>
+    <h1 id="heading">Hello World!</h1>
     
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     
     <script>
     
    var offset = 0;
-   var direction ='right';
-   var clicks = 50;
+   var direction = 'right';
+   var speed = 50;
    var counter = 0;
+   var hd = $("#heading");
+   var RIGHT = 'right';
+   var LEFT = 'left';
+   var UP = 'up';
+   var DOWN = 'down';
+   var maxOffset = 200;
+   var minOffset = 0;
+   var maxHit = 10;
+   var speedFactor = 1.5;
    
-   $("#heading").offset({left: offset, top: offset});
+   hd.offset({left: offset, top: offset});
 
-   var movingHeading = function () {
-    if (direction === 'right') {
-        $("#heading").offset({left: offset});
+   var moveHeading = function () {
+    if (direction === RIGHT) {
+        hd.offset({left: offset});
         offset++;
-        if (offset > 200) {
-            offset = 0;
-            direction = 'down';
+        if (offset > maxOffset) {
+            offset = minOffset;
+            direction = DOWN;
         } 
-    } else if (direction === 'down') {
-        $("#heading").offset({top: offset});
+    } else if (direction === DOWN) {
+        hd.offset({top: offset});
         offset++;
-        if (offset > 200) {
-            offset = 200;
-            direction = 'left';
+        if (offset > maxOffset) {
+            offset = maxOffset;
+            direction = LEFT;
         }
-    } else if (direction === 'left') {
-        $("#heading").offset({left: offset});
+    } else if (direction === LEFT) {
+        hd.offset({left: offset});
         offset--;
-        if (offset < 0) {
-            offset = 200;
-            direction = 'up';
+        if (offset < minOffset) {
+            offset = maxOffset;
+            direction = UP;
         }
-    } else if (direction === 'up') {
-        $("#heading").offset({top: offset});
+    } else if (direction === UP) {
+        hd.offset({top: offset});
         offset--;
-        if (offset < 0) {
-            offset = 0;
-            direction = 'right';
+        if (offset < minOffset) {
+            offset = minOffset;
+            direction = RIGHT;
         }
     }
 } 
 
 
-var intervalId = setInterval(movingHeading, clicks);
+var intervalId = setInterval(moveHeading, speed);
 
-$("#heading").click(function (event) {
-    clicks /= 1,5;
+hd.click(function (event) {
+    speed /= speedFactor;
     counter++;
     clearInterval(intervalId);
-    var intervalId = setInterval(movingHeading, clicks);
-    $("#heading").text('Hello World ' + counter);
-    if (counter > 10) {
+    intervalId = setInterval(moveHeading, speed);
+    hd.text('Hello World! ' + counter);
+    if (counter > maxHit) {
         clearInterval(intervalId);
-        $("#heading").text('Congratulations, you won!!!');
+        hd.text('Congratulations, you won!!!');
     };
     
 });      
-clearInterval(movingHeading);
+clearInterval(moveHeading);
     
     </script>  
     
