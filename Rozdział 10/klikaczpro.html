@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="heading">Hello World!</h1>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+    <script>
+    
+   var offset = 0;
+   var direction = 'right';
+   var speed = 50;
+   var counter = 0;
+   var hd = $("#heading");
+   var RIGHT = 'right';
+   var LEFT = 'left';
+   var UP = 'up';
+   var DOWN = 'down';
+   var maxOffset = 200;
+   var minOffset = 0;
+   var maxHit = 10;
+   var speedFactor = 1.5;
+   
+   hd.offset({left: offset, top: offset});
+
+   var moveHeading = function () {
+    if (direction === RIGHT) {
+        hd.offset({left: offset});
+        offset++;
+        if (offset > maxOffset) {
+            offset = minOffset;
+            direction = DOWN;
+        } 
+    } else if (direction === DOWN) {
+        hd.offset({top: offset});
+        offset++;
+        if (offset > maxOffset) {
+            offset = maxOffset;
+            direction = LEFT;
+        }
+    } else if (direction === LEFT) {
+        hd.offset({left: offset});
+        offset--;
+        if (offset < minOffset) {
+            offset = maxOffset;
+            direction = UP;
+        }
+    } else if (direction === UP) {
+        hd.offset({top: offset});
+        offset--;
+        if (offset < minOffset) {
+            offset = minOffset;
+            direction = RIGHT;
+        }
+    }
+} 
+
+
+var intervalId = setInterval(moveHeading, speed);
+
+hd.click(function (event) {
+    speed /= speedFactor;
+    counter++;
+    clearInterval(intervalId);
+    intervalId = setInterval(moveHeading, speed);
+    hd.text('Hello World! ' + counter);
+    if (counter > maxHit) {
+        clearInterval(intervalId);
+        hd.text('Congratulations, you won!!!');
+    };
+    
+});      
+clearInterval(moveHeading);
+    
+    </script>  
+    
+
+
+</body>
+</html>
