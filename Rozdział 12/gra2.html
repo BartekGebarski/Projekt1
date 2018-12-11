@@ -12,9 +12,9 @@
  
         <script>
             
-            var number = 5;
-            var distance = function () {
-                var randomNumber = Math.floor(Math.random() * number);
+            var CONST_NUMBER = 5;
+            var getDistance = function () {
+                var randomNumber = Math.floor(Math.random() * CONST_NUMBER);
                 return randomNumber;
             };
             
@@ -81,12 +81,11 @@
 
             
 
-            /*setInterval(tesla.moveRight(distance), 30);
-            setInterval(nissan.moveRight(distance), 30);*/
+            
 
             setInterval(function () {
-                tesla.moveRight(Math.random() * 5);
-                nissan.moveRight(Math.random() * 5);
+                tesla.moveRight(getDistance());
+                nissan.moveRight(getDistance());
                 }, 30);
             
 
