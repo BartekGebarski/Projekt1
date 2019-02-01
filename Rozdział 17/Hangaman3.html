@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hangman3!</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="200" height="200"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var letterAppearence = 0;
+        var wrongGuess = 0;
+
+        var drawHead = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(20, 20);
+            ctx.lineTo(40, 20);
+            ctx.lineTo(40, 40);
+            ctx.lineTo(20, 40);
+            ctx.lineTo(20, 20);
+            ctx.stroke();
+        };
+
+        var drawBody = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 40);
+            ctx.lineTo(30, 80);
+            ctx.stroke();
+        };
+
+        var drawLeftArm = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 50);
+            ctx.lineTo(50, 40);
+            ctx.stroke();
+        };
+
+        var drawRightArm = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 50);
+            ctx.lineTo(10, 40);
+            ctx.stroke();
+        };
+
+        var drawLeftLeg = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 80);
+            ctx.lineTo(50, 90);
+            ctx.stroke();
+        };
+
+        var drawRightLeg = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 80);
+            ctx.lineTo(10, 90);
+            ctx.stroke();
+        };
+
+        var drawRope = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 20);
+            ctx.lineTo(30, 10);
+            ctx.stroke();
+        };
+
+        var drawRod = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, 10);
+            ctx.lineTo(70, 10);
+            ctx.stroke();
+        };
+
+        var drawStick = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(70, 10);
+            ctx.lineTo(70, 110);
+            ctx.stroke();
+        };
+
+        var drawBase = function () {
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(10, 110);
+            ctx.lineTo(130, 110);
+            ctx.stroke();
+        };
+
+        var words = ['javascript', 'monkey', 'amazing', 'pancake', 'tractor', 'blablabla'];
+        var pickWord = function () {
+            return words[Math.floor(Math.random() * words.length)];
+        };
+        var setupAnswerArray = function (word) {
+            var answerArray = [];
+            for (var i = 0; i < word.length; i++) {
+                answerArray[i] = '_';
+            }
+            return answerArray;
+        }
+        var word = pickWord();
+        var answerArray = setupAnswerArray(word);
+        var remainingLetters = word.length;
+        var showPlayerProgress = function () {
+            alert(answerArray.join(' '));
+        }
+        var getGuess = function () {
+            var guessResult = prompt('Guess a letter, or click Cancel to stop playing.');
+            return guessResult ? guessResult.toLowerCase() : null;
+        }
+        var updateGameState = function (guess, word, answerArray) {
+            
+            for (var j = 0; j < word.length; j++) {
+                if (answerArray[j] === guess) {
+                    alert('You already guessed this letter!');
+                    break;
+                } else if (wrongGuess === 10) {
+                    alert('You lost!');
+                    document.addEventListener('keydown', reload);
+                } else if (word[j] === guess) {
+                    answerArray[j] = guess;
+                    letterAppearence++;                    
+                }              
+            }
+            return letterAppearence; 
+        }
+        var showAnswerAndCongratulatePlayer = function (answerArray) {
+            alert(answerArray.join(' '));
+            alert('Good job! The answer is ' + word)
+        }
+        var drawHangman = function(wrongGuess) {
+            if (wrongGuess === 1) {
+                drawHead();
+            }
+            if (wrongGuess === 2) {
+                drawBody();
+            }
+            if (wrongGuess === 3) {
+                drawLeftArm();
+            }
+            if (wrongGuess === 4) {
+                drawRightArm();
+            }
+            if (wrongGuess === 5) {
+                drawLeftLeg();
+            }
+            if (wrongGuess === 6) {
+                drawRightLeg();
+            }
+            if (wrongGuess === 7) {
+                drawRope();
+            }
+            if (wrongGuess === 8) {
+                drawRod();
+            }
+            if (wrongGuess === 9) {
+                drawStick();
+            }
+            if (wrongGuess === 10) {
+                drawBase();
+            }
+        }
+        while (remainingLetters > 0) {
+            showPlayerProgress(answerArray);
+            drawHangman(wrongGuess);
+            var guess = getGuess();
+            if (guess === null) {
+                break;
+            } else if (guess.length !== 1) {
+                alert('Please enter a single letter.');
+            } else {
+                var correctGuess = updateGameState(guess, word, answerArray)
+                remainingLetters -= letterAppearence;
+                
+                if (correctGuess === 0) {
+                    wrongGuess++
+                }
+
+            }
+        }
+        showAnswerAndCongratulatePlayer(answerArray);
+        location.reload();
+    </script>
+</body>
+
+</html>
