@@ -13,8 +13,6 @@
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
-        var letterAppearence = 0;
-        var wrongGuess = 0;
 
         var drawHead = function () {
             ctx.lineWidth = 4;
@@ -113,6 +111,9 @@
         var word = pickWord();
         var answerArray = setupAnswerArray(word);
         var remainingLetters = word.length;
+        var wrongGuess = 0;
+        var MAX_GUESSES = 10;
+
         var showPlayerProgress = function () {
             alert(answerArray.join(' '));
         }
@@ -120,78 +121,86 @@
             var guessResult = prompt('Guess a letter, or click Cancel to stop playing.');
             return guessResult ? guessResult.toLowerCase() : null;
         }
-        var updateGameState = function (guess, word, answerArray) {
-            
-            for (var j = 0; j < word.length; j++) {
-                if (answerArray[j] === guess) {
-                    alert('You already guessed this letter!');
-                    break;
-                } else if (wrongGuess === 10) {
-                    alert('You lost!');
-                    document.addEventListener('keydown', reload);
-                } else if (word[j] === guess) {
-                    answerArray[j] = guess;
-                    letterAppearence++;                    
-                }              
-            }
-            return letterAppearence; 
-        }
-        var showAnswerAndCongratulatePlayer = function (answerArray) {
+
+        var showAnswerAndCongratulatePlayer = function () {
             alert(answerArray.join(' '));
             alert('Good job! The answer is ' + word)
         }
-        var drawHangman = function(wrongGuess) {
-            if (wrongGuess === 1) {
-                drawHead();
-            }
-            if (wrongGuess === 2) {
-                drawBody();
-            }
-            if (wrongGuess === 3) {
-                drawLeftArm();
-            }
-            if (wrongGuess === 4) {
-                drawRightArm();
-            }
-            if (wrongGuess === 5) {
-                drawLeftLeg();
-            }
-            if (wrongGuess === 6) {
-                drawRightLeg();
-            }
-            if (wrongGuess === 7) {
-                drawRope();
-            }
-            if (wrongGuess === 8) {
-                drawRod();
-            }
-            if (wrongGuess === 9) {
-                drawStick();
-            }
-            if (wrongGuess === 10) {
-                drawBase();
-            }
-        }
-        while (remainingLetters > 0) {
-            showPlayerProgress(answerArray);
-            drawHangman(wrongGuess);
-            var guess = getGuess();
-            if (guess === null) {
-                break;
-            } else if (guess.length !== 1) {
-                alert('Please enter a single letter.');
-            } else {
-                var correctGuess = updateGameState(guess, word, answerArray)
-                remainingLetters -= letterAppearence;
-                
-                if (correctGuess === 0) {
-                    wrongGuess++
-                }
+        var drawHangman = function() {
+            var functions = [
+              drawHead,
+              drawBody,
+              drawLeftArm,
+              drawRightArm,
+              drawLeftLeg,
+              drawRightLeg,
+              drawRope,
+              drawRod,
+              drawStick,
+              drawBase,
+            ]
 
+            if (functions[wrongGuess - 1]) {
+              (functions[wrongGuess - 1])();
             }
         }
-        showAnswerAndCongratulatePlayer(answerArray);
-        location.reload();
+
+
+        var getLetterAppearence = function (guess) {
+          var letterAppearence = 0;
+
+          for (var j = 0; j < word.length; j++) {
+            if (word[j] === guess) {
+              answerArray[j] = guess;
+              letterAppearence++;
+            }
+          }
+
+          return letterAppearence;
+        }
+
+        var startGameIteration = function() {
+          showPlayerProgress(answerArray);
+
+          var guess = getGuess();
+
+          if (guess === null) return;
+
+          if (guess.length !== 1) {
+            alert('Please enter a single letter.');
+            return startGameIteration();
+          }
+
+          if (answerArray.indexOf(guess) !== -1) {
+            alert('You already guessed this letter!');
+            return startGameIteration();
+          }
+
+          var letterAppearence = getLetterAppearence(guess)
+          remainingLetters = remainingLetters - letterAppearence;
+
+          if (remainingLetters === 0) {
+            showAnswerAndCongratulatePlayer();
+            return;
+          }
+
+          if (letterAppearence === 0) {
+            wrongGuess++
+            drawHangman();
+
+            if (wrongGuess >= MAX_GUESSES) {
+              alert('You lost!');
+              return;
+            } else {
+              setTimeout(startGameIteration, 100);
+            }
+          } else {
+            startGameIteration();
+          }
+        }
+
+      startGameIteration();
+
     </script>
 </body>
 
