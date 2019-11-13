@@ -1,0 +1,26 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>SequenceDevastator4200</title>
+        
+    </head>
+    <body>
+        <h1><strong>Let's devastate some sequence!!!</strong></h1>
+
+        
+            <strong>Paste here your DNA sequence to Devastate:</strong><br>
+            <textarea id="inSeq" name="inputSeq" type="text" rows="10" cols="70" placeholder="e.g. BGBGBGBGBGBGBG"></textarea><br>               
+        <form action="savecontent" name="aForm">              
+            <strong>Type here your Devastation Factor:</strong>
+            <input id="devFac" type="text" name="Devastation Factor" value="50" size="4"><strong>mer</strong><br>
+            <button id="create" type="button">DEVASTATE</button>
+            <input type="reset" value="RESET">
+            <a download="devastatedSequence.txt" id="download_link" style="display: none">Download</a>
+            <input id="saveinput" type="hidden" name="filecontent" value="">
+        </form>
+        <script type="text/javascript" src="randomSequences2.js"></script> 
+    </body>
+    </html>
