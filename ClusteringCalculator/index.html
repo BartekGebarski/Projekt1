@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clustering Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" type="text/css" href="ClusteringCalculator.css" media="screen">
+</head>
+<body>
+    
+    <div id="app">
+        <div class="mainBox">
+            <h1>Choose the Sequencer:</h1>
+                <div class="box" id="buttons">
+                    <button class="button" @click="currentSequencer='iSeq'"><strong>iSeq</strong></button>
+                    <button class="button" @click="currentSequencer='MiSeq'"><strong>MiSeq</strong></button>
+                    <button class="button" @click="currentSequencer='NextSeq'"><strong>NextSeq</strong></button>
+                    <button class="button" @click="currentSequencer='HiSeq'"><strong>HiSeq</strong></button>
+                    <button class="button" @click="currentSequencer='NovaSeq'"><strong>NovaSeq</strong></button>
+                </div>
+                <div class="box" v-if="currentSequencer != null">                        
+                    <p style="display:none">{{ getDefaultLaneMolarity }}{{ getDefaultPhixPercentage }}{{ getFactor }}{{ calculatePhiXMolarity }}{{ calculateLibraryMolarity }} {{ calculateLibraryVolume }}{{ calculatePhiXVolume }}{{ calculateBufferVolume }}{{ getiSeqPhiXStock }}</p>
+                        <template v-if="currentSequencer =='MiSeq' || currentSequencer == 'NextSeq' || currentSequencer == 'HiSeq'" >
+                            <h2>
+                                <strong>{{ currentSequencer }} Clustering:</strong>
+                            </h2> 
+                            <div class="formBox">
+                                <label for="laneMolarity">Enter lane molarity:</label>
+                                    <input type="number" v-model="laneMolarity">pM</br>
+                                    <hr>
+                                <label for="phiXPercentage">Enter PhiX percentage:</label>
+                                    <input type="number" v-model="phiXPercentage">%</br>
+                                    <hr>
+                                <label for="phiXPercentage">Enter PhiX Stock molarity:</label>
+                                <label for="phiXPercentage"><input type="radio" value="20" v-model="phiXStock">20nM</label>
+                                <label for="phiXPercentage"><input type="radio" value="200" v-model="phiXStock">200nM</label>
+                                    <div class="generalparameters">Total Lane Molarity: {{ laneMolarity }}pM</br>
+                                            Library Molarity: {{ libraryMolarity }}pM</br>
+                                            PhiX Molarity: {{ phiXMolarity }}pM</br>
+                                    </div>
+                                    <div class="outcome">
+                                            <strong>PhiX Volume: {{ phiXVolume }}µl</strong><br>
+                                            <strong>Sample Volume: {{ libraryVolume }}µl</strong><br>
+                                            <strong>Buffer Volume: {{ bufferVolume }}µl</strong><br>
+                                    </div>                                
+                            </div>                          
+                        </template>
+                        <template v-else-if="currentSequencer == 'iSeq'">
+                            <p style="display: none;">{{ calculateiSeqBufferVol }}{{ calculateiSeqLibraryVol }}{{ calculateiSeqPhiXVolume }}{{ getiSeqLaneMolarity }}{{ getiSeqLoadingVolume }}</p>                                               <h2>
+                                    <strong>{{ currentSequencer }} Clustering:</strong>
+                                </h2> 
+                                <div class="formBox">
+                                    <label for="laneMolarity">Desired loading concentration:</label>
+                                        <input type="number" v-model="iSeqLaneMolarity">pM</br>
+                                            <hr>
+                                    <label for="phiXPercentage">Desired PhiX percentage:</label>
+                                        <input type="number" v-model="iSeqPhiXPercentage">%</br>
+                                            <hr>
+                                    <label for="laneMolarity">Loading volume:</label>
+                                        <input type="number" v-model="iSeqLoadingVolume">µl</br>
+                                            <hr>
+                                    <label for="phiXPercentage">Concentration of <strong>non-denatured</strong> PhiX:</label>
+                                        <input type="number" v-model="iSeqNDPhiXConc">nM</br>
+                                            <hr>
+                                    <label for="phiXPercentage">Concentration of the input Multiplex:</label>
+                                        <input type="number" v-model="MpConcentration">nM</br>
+                                        <div class="outcome">
+                                                <strong>PhiX Volume: {{ iSeqPhiX }}µl</strong><br>
+                                                <strong>Sample Volume: {{ iSeqSampleVol }}µl</strong><br>
+                                                <strong>Buffer Volume: {{ iSeqBuffer }}µl</strong><br>
+                                        </div>                                
+                                </div>                                              
+                        </template>             
+                        <template v-else-if="currentSequencer == 'NovaSeq'">
+                            <p style="display: none;">{{ getNovaSeqXPLoadingVolume }}{{ calculateiSeqBufferVol }}{{ calculateNovaSeqLibVol }}{{ calculateiSeqPhiXVolume }}{{ getiSeqLaneMolarity }}{{ getiSeqLoadingVolume }}</p>
+                            <button class="button" @click="modeSwitch(true)"><strong>NovaSeq Clustering</strong></button>
+                            <button class="button" @click="modeSwitch(false)"><strong>NovaSeq XP Clustering</strong></button>
+                            <template v-if="novaSeqClustering">
+                                <p style="display: none;"></p>
+                                <h2>
+                                    <strong>{{ currentSequencer }} Clustering:</strong>
+                                </h2> 
+                                <div class="formBox">
+                                    <label for="Flowcell">Choose the Flowcell:</label>
+                                    <label for="Flowcell"><input type="radio" value="SP" v-model="flowcell">SP</label>
+                                    <label for="Flowcell"><input type="radio" value="S1" v-model="flowcell">S1</label>
+                                    <label for="Flowcell"><input type="radio" value="S2" v-model="flowcell">S2</label>
+                                    <label for="Flowcell"><input type="radio" value="S4" v-model="flowcell">S4</label><br>
+                                        <label for="laneMolarity">Desired loading concentration:</label>
+                                            <input type="number" v-model="iSeqLaneMolarity">pM</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Desired PhiX percentage:</label>
+                                            <input type="number" v-model="iSeqPhiXPercentage">%</br>
+                                                <hr>
+                                        <label for="laneMolarity">Loading volume:</label>
+                                            <input type="number" v-model="iSeqLoadingVolume">µl</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Concentration of <strong>non-denatured</strong> PhiX:</label>
+                                            <input type="number" v-model="iSeqNDPhiXConc">nM</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Concentration of the input Multiplex:</label>
+                                            <input type="number" v-model="MpConcentration">nM</br>
+                                            <div class="outcome">
+                                                    <strong>PhiX Volume: {{ iSeqPhiX }}µl</strong><br>
+                                                    <strong>Sample Volume: {{ iSeqSampleVol }}µl</strong><br>
+                                                    <strong>Buffer Volume: {{ iSeqBuffer }}µl</strong><br>
+                                            </div>                                
+                                </div>                                  
+                            </template> 
+                            <template v-else-if="!novaSeqClustering">
+                                <h2>
+                                    <strong>{{ currentSequencer }} Clustering:</strong>
+                                </h2> 
+                                <h3><strong>XP Workflow</strong></h3>
+                                <div class="formBox">
+                                    <label for="Flowcell">Choose the Flowcell:</label>
+                                    <label for="Flowcell"><input type="radio" value="SP" v-model="xpFlowcell">SP</label>
+                                    <label for="Flowcell"><input type="radio" value="S1" v-model="xpFlowcell">S1</label>
+                                    <label for="Flowcell"><input type="radio" value="S2" v-model="xpFlowcell">S2</label>
+                                    <label for="Flowcell"><input type="radio" value="S4" v-model="xpFlowcell">S4</label><br>
+                                        <label for="laneMolarity">Desired loading concentration:</label>
+                                            <input type="number" v-model="iSeqLaneMolarity">pM</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Desired PhiX percentage:</label>
+                                            <input type="number" v-model="iSeqPhiXPercentage">%</br>
+                                                <hr>
+                                        <label for="laneMolarity">Loading volume:</label>
+                                            <input type="number" v-model="iSeqLoadingVolume">µl</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Concentration of <strong>non-denatured</strong> PhiX:</label>
+                                            <input type="number" v-model="iSeqNDPhiXConc">nM</br>
+                                                <hr>
+                                        <label for="phiXPercentage">Concentration of the input Multiplex:</label>
+                                            <input type="number" v-model="MpConcentration">nM</br>
+                                            <div class="outcome">
+                                                    <strong>PhiX Volume: {{ iSeqPhiX }}µl</strong><br>
+                                                    <strong>Sample Volume: {{ iSeqSampleVol }}µl</strong><br>
+                                                    <strong>Buffer Volume: {{ iSeqBuffer }}µl</strong><br>
+                                            </div>                                
+                                </div>                                  
+                            </template>
+                            <div class="pre-formatted">{{ instruction }}</div>
+                        </template>
+                </div>  
+            <footer>
+                <center>
+                    <p><strong>Vovtek GmbH</strong></br><i>All Rights Reserved</i></p>
+                    </center>
+            </footer>                            
+        </div>   
+    </div>
+</body>
+<script>
+    new Vue ({
+    el: '#app',
+    data: {
+        currentSequencer: null,
+        laneMolarity: null,
+        phiXPercentage: null,
+        factor: null,
+        phiXMolarity: null,
+        libraryMolarity: null,
+        libraryVolume: null,
+        phiXVolume: null,
+        bufferVolume: null,
+        phiXStock: 20,
+        instruction: `bla bla bla\nbla bla bla\nbla bla`,
+        iSeqClustering: false,
+        novaSeqClustering: true,
+        novaSeqXPClustering: false,
+        iSeqLaneMolarity: null,
+        iSeqPhiXPercentage: 1,
+        iSeqLoadingVolume: null,
+        iSeqNDPhiXConc: null,
+        MpConcentration: 2.5,
+        iSeqSampleVol: null,
+        iSeqPhiX: null,
+        iSeqBuffer: null,
+        flowcell: null,
+        xpFlowcell: null
+    },
+    methods: {
+        getInstruction() {
+            return `bla bla bla\nbla bla bla\nbla bla`;
+        },
+        modeSwitch(arg) {
+            this.novaSeqClustering = arg;
+        }
+    },
+    computed: {       
+        getDefaultLaneMolarity() {
+            if (this.currentSequencer == 'MiSeq' || this.currentSequencer == 'HiSeq') {
+                return this.laneMolarity = 18;
+            } else if (this.currentSequencer == 'NextSeq') {
+                return this.laneMolarity = 2.1;
+            };
+        },
+        getDefaultPhixPercentage() {
+            if (this.currentSequencer == 'MiSeq' || this.currentSequencer == 'NextSeq') {
+                return this.phiXPercentage = 5;
+            } else if (this.currentSequencer == 'HiSeq') {
+                return this.phiXPercentage = 1;
+            };
+        },
+        getFactor() {            
+            if (this.currentSequencer == 'MiSeq') {
+                return this.factor = 0.6;
+            } else if (this.currentSequencer == 'NextSeq') {
+                return this.factor = 1.3;
+            } else if (this.currentSequencer == 'HiSeq') {
+                return this.factor = 0.12;
+            }
+        },
+        calculatePhiXMolarity() {            
+            return this.phiXMolarity = (this.laneMolarity / 100 * this.phiXPercentage).toFixed(2);
+        },
+        calculateLibraryMolarity() {            
+            return this.libraryMolarity = (this.laneMolarity - this.phiXMolarity).toFixed(2);
+        },
+        calculateLibraryVolume() {            
+            return  this.libraryVolume = ((1000 / 50 * this.libraryMolarity) * this.factor).toFixed(2);
+        },
+        calculatePhiXVolume() {
+            return this.phiXVolume = ((1000 / this.phiXStock * this.phiXMolarity) * this.factor).toFixed(2);
+        },
+        calculateBufferVolume() {
+            return this.bufferVolume = ((1000 * this.factor) - this.phiXVolume - this.libraryVolume).toFixed(2);
+        },
+        getiSeqLaneMolarity() {
+            if (this.currentSequencer == 'iSeq') {
+                return this.iSeqLaneMolarity = 50;
+            } else if (this.currentSequencer == 'NovaSeq') {
+                return this.iSeqLaneMolarity = 100;
+            };
+        },
+        getiSeqLoadingVolume() {
+            if (this.currentSequencer == 'iSeq') {
+                return this.iSeqLoadingVolume = 25;
+            } else if (this.currentSequencer == 'NovaSeq') {
+                if (this.flowcell == 'SP' || this.flowcell == 'S1') {
+                    return this.iSeqLoadingVolume = 100;
+                } else if (this.flowcell == 'S2') {
+                    return this.iSeqLoadingVolume = 150;
+                } else if (this.flowcell == 'S4') {
+                    return this.iSeqLoadingVolume = 310;
+                };
+            };
+        },
+        getiSeqPhiXStock() {
+            if (this.currentSequencer == 'iSeq') {
+                return this.iSeqNDPhiXConc = 0.1;
+            } else if (this.currentSequencer == 'NovaSeq') {
+                return this.iSeqNDPhiXConc = 1;
+            };
+        },
+        calculateiSeqPhiXVolume() {            
+            return this.iSeqPhiX = (this.iSeqLoadingVolume / (this.iSeqNDPhiXConc / (this.iSeqPhiXPercentage * 5 / 1000) / (this.iSeqLaneMolarity / 100))).toFixed(2);
+        },
+        calculateiSeqLibraryVol() {            
+            return this.iSeqSampleVol = (this.iSeqLoadingVolume / ((this.MpConcentration/ this.iSeqLaneMolarity) * 1000)).toFixed(2);
+        },
+        calculateiSeqBufferVol() {            
+            return  this.iSeqBuffer = (this.iSeqLoadingVolume - this.iSeqPhiX - this.iSeqSampleVol).toFixed(2);
+        },
+        calculateNovaSeqLibVol() {
+        return this.iSeqSampleVol = (this.iSeqLoadingVolume / (this.MpConcentration / (this.iSeqLaneMolarity * 5 / 1000))).toFixed(2);
+        },
+        getNovaSeqXPLoadingVolume() {
+           if (this.currentSequencer == 'NovaSeq') {
+                if (this.xpFlowcell == 'SP' || this.xpFlowcell == 'S1') {
+                    return this.iSeqLoadingVolume = 18;
+                } else if (this.xpFlowcell == 'S2') {
+                    return this.iSeqLoadingVolume = 22;
+                } else if (this.xpFlowcell == 'S4') {
+                    return this.iSeqLoadingVolume = 30;
+                };
+            };
+        }  
+    }    
+})
+</script>
+
+</html>
